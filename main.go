@@ -40,6 +40,8 @@ func main() {
 	}
 
 	switch {
+	case (zt == true):
+		zoneTransfer(domain)
 	case (brute == true):
 		var wl Wordlist
 		if wordlist == "" {
@@ -48,8 +50,6 @@ func main() {
 			wl = NewFile(wordlist)
 		}
 		bruteForce(threads, wl.GetChannel(), domain)
-	case (zt == true):
-		zoneTransfer(domain)
 	}
 }
 
