@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"sort"
 	"sync"
 
 	"github.com/miekg/dns"
@@ -54,7 +55,6 @@ func main() {
 }
 
 func zoneTransfer(domain string) {
-	//domainSet := make(map[string]struct{})
 	fqdn := dns.Fqdn(domain)
 
 	servers, err := net.LookupNS(domain)
@@ -87,6 +87,8 @@ func zoneTransfer(domain string) {
 }
 
 func bruteForce(threads int, wordlist <-chan string, domain string) {
+	results := make(results, 0)
+
 	var wg sync.WaitGroup
 	for i := 0; i < threads; i++ {
 		wg.Add(1)
@@ -103,9 +105,8 @@ func bruteForce(threads int, wordlist <-chan string, domain string) {
 					continue
 				}
 
-				for _, answer := range answers {
-					fmt.Printf("%s\t\t%s\n", guess, answer)
-				}
+				result := result{Domain: guess, Addrs: answers}
+				results = append(results, result)
 			}
 
 			wg.Done()
@@ -113,6 +114,11 @@ func bruteForce(threads int, wordlist <-chan string, domain string) {
 	}
 
 	wg.Wait()
+	sort.Sort(results)
+
+	for _, result := range results {
+		fmt.Println(result)
+	}
 }
 
 func printUsage() {
