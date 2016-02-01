@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"log"
@@ -87,12 +89,25 @@ func zoneTransfer(domain string) {
 }
 
 func bruteForce(threads int, wordlist <-chan string, domain string) {
+	fmt.Println("[+] Detecting wildcard")
+	wildcard, responses, err := detectWildcard(domain)
+	if err != nil {
+		// TODO: Fail loudly
+	}
+
+	if wildcard {
+		fmt.Println("[+] Wildcard detected for domain")
+	}
+
+	fmt.Println("[+] Beginning brute force attempt")
+
 	results := make(results, 0)
 
 	var wg sync.WaitGroup
 	for i := 0; i < threads; i++ {
 		wg.Add(1)
 		go func(wordlist <-chan string) {
+		nextWord:
 			for {
 				word, ok := <-wordlist
 				if !ok {
@@ -103,6 +118,15 @@ func bruteForce(threads int, wordlist <-chan string, domain string) {
 				answers, err := net.LookupHost(word + "." + domain)
 				if err != nil {
 					continue
+				}
+
+				if wildcard {
+					for _, answer := range answers {
+						if _, ok := responses[answer]; ok {
+							// it's a wildcard response
+							continue nextWord
+						}
+					}
 				}
 
 				result := result{Domain: guess, Addrs: answers}
@@ -119,6 +143,33 @@ func bruteForce(threads int, wordlist <-chan string, domain string) {
 	for _, result := range results {
 		fmt.Println(result)
 	}
+}
+
+func detectWildcard(domain string) (bool, map[string]struct{}, error) {
+	bytes := make([]byte, 12)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return false, nil, err
+	}
+
+	domain = fmt.Sprintf("%s.%s", hex.EncodeToString(bytes), domain)
+
+	answers, err := net.LookupHost(domain)
+	if err != nil {
+		if asserted, ok := err.(*net.DNSError); ok && asserted.Err == "no such host" {
+			return false, nil, nil
+		}
+
+		return false, nil, err
+	}
+
+	responses := make(map[string]struct{})
+
+	for _, answer := range answers {
+		responses[answer] = struct{}{}
+	}
+
+	return true, responses, nil
 }
 
 func printUsage() {
