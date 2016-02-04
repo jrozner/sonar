@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 )
 
 type result struct {
-	Domain string
-	Addrs  []string
+	Domain string   `json:"domain"`
+	Addrs  []string `json:"addrs"`
 }
 
 func (r result) String() string {

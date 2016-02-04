@@ -3,6 +3,8 @@ package main
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
+	"encoding/xml"
 	"flag"
 	"fmt"
 	"log"
@@ -21,6 +23,8 @@ func main() {
 		brute    bool
 		threads  int
 		zt       bool
+		output   string
+		format   string
 	)
 
 	flag.Usage = printUsage
@@ -29,6 +33,8 @@ func main() {
 	flag.BoolVar(&brute, "bruteforce", true, "brute force domains")
 	flag.IntVar(&threads, "threads", 4, "number of threads for brute forcing")
 	flag.BoolVar(&zt, "zonetransfer", false, "perform zone transfer")
+	flag.StringVar(&output, "output", "", "write output to specified file")
+	flag.StringVar(&format, "format", "", "output format (json, xml, csv)")
 	flag.Parse()
 
 	if flag.NArg() != 1 {
@@ -58,7 +64,42 @@ func main() {
 		results = bruteForce(threads, wl.GetChannel(), domain)
 	}
 
-	printResults(results)
+	if output == "" {
+		printResults(results)
+	} else {
+		_ = writeOutput(output, format, results)
+	}
+}
+
+func writeOutput(output, format string, results results) error {
+	fp, err := os.OpenFile(output, os.O_CREATE|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+
+	defer fp.Close()
+
+	var serialized []byte
+
+	switch format {
+	case "json":
+		serialized, err = json.Marshal(results)
+	case "xml":
+		serialized, err = xml.Marshal(results)
+	default:
+		// TODO: return error for invalid format
+	}
+
+	if err != nil {
+		return err
+	}
+
+	_, err = fp.Write(serialized)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func zoneTransfer(domain string) results {
