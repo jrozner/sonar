@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"sort"
+	"strings"
 	"sync"
 
 	"github.com/miekg/dns"
@@ -42,9 +43,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var results results
+
 	switch {
 	case (zt == true):
-		zoneTransfer(domain)
+		results = zoneTransfer(domain)
 	case (brute == true):
 		var wl Wordlist
 		if wordlist == "" {
@@ -52,11 +55,14 @@ func main() {
 		} else {
 			wl = NewFile(wordlist)
 		}
-		bruteForce(threads, wl.GetChannel(), domain)
+		results = bruteForce(threads, wl.GetChannel(), domain)
 	}
+
+	printResults(results)
 }
 
-func zoneTransfer(domain string) {
+func zoneTransfer(domain string) results {
+	results := newResultSet()
 	fqdn := dns.Fqdn(domain)
 
 	servers, err := net.LookupNS(domain)
@@ -82,13 +88,21 @@ func zoneTransfer(domain string) {
 			}
 
 			for _, rr := range envelope.RR {
-				fmt.Println(rr.Header().Name)
+				switch v := rr.(type) {
+				case *dns.A:
+					results.Add(strings.TrimRight(v.Header().Name, "."), v.A.String())
+				case *dns.AAAA:
+					results.Add(strings.TrimRight(v.Header().Name, "."), v.AAAA.String())
+				default:
+				}
 			}
 		}
 	}
+
+	return results.Results()
 }
 
-func bruteForce(threads int, wordlist <-chan string, domain string) {
+func bruteForce(threads int, wordlist <-chan string, domain string) results {
 	fmt.Println("[+] Detecting wildcard")
 	wildcard, responses, err := detectWildcard(domain)
 	if err != nil {
@@ -140,6 +154,10 @@ func bruteForce(threads int, wordlist <-chan string, domain string) {
 	wg.Wait()
 	sort.Sort(results)
 
+	return results
+}
+
+func printResults(results results) {
 	for _, result := range results {
 		fmt.Println(result)
 	}
