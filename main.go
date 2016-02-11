@@ -59,7 +59,11 @@ func main() {
 		if wordlist == "" {
 			wl = NewInternal(internalWords)
 		} else {
-			wl = NewFile(wordlist)
+			fp, err := os.Open(wordlist)
+			if err != nil {
+				log.Fatal(err)
+			}
+			wl = NewFile(fp)
 		}
 		results = bruteForce(threads, wl.GetChannel(), domain)
 	}

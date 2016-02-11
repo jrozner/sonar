@@ -3,8 +3,6 @@ package main
 import (
 	"bufio"
 	"io"
-	"log"
-	"os"
 	"strings"
 )
 
@@ -69,12 +67,8 @@ func (f *File) GetChannel() <-chan string {
 	return f.ch
 }
 
-func NewFile(path string) *File {
+func NewFile(fp io.ReadCloser) *File {
 	ch := make(chan string)
-	fp, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	wordlist := &File{
 		fp: fp,
