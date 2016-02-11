@@ -92,7 +92,7 @@ func writeOutput(output, format string, results sonar.Results) error {
 	case "xml":
 		serialized, err = xml.Marshal(results)
 	case "nmap":
-		serialized, err = sonar.ToNmap(results), nil
+		serialized, err = sonar.ToNmap(results)
 	default:
 		// TODO: return error for invalid format
 	}

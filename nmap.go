@@ -2,14 +2,17 @@ package sonar
 
 import "bytes"
 
-func ToNmap(results Results) []byte {
+func ToNmap(results Results) ([]byte, error) {
 	buffer := bytes.NewBuffer([]byte{})
 
 	for _, result := range results {
 		for _, addr := range result.Addrs {
-			buffer.WriteString(addr + "\n")
+			_, err := buffer.WriteString(addr + "\n")
+			if err != nil {
+				return buffer.Bytes(), err
+			}
 		}
 	}
 
-	return buffer.Bytes()
+	return buffer.Bytes(), nil
 }
