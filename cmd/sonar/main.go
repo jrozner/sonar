@@ -35,7 +35,7 @@ func main() {
 	flag.IntVar(&threads, "threads", 4, "number of threads for brute forcing")
 	flag.BoolVar(&zt, "zonetransfer", false, "perform zone transfer")
 	flag.StringVar(&output, "output", "", "write output to specified file")
-	flag.StringVar(&format, "format", "", "output format (json, xml, csv)")
+	flag.StringVar(&format, "format", "", "output format (json, xml, csv, nmap)")
 	flag.Parse()
 
 	if flag.NArg() != 1 {
@@ -91,6 +91,8 @@ func writeOutput(output, format string, results sonar.Results) error {
 		serialized, err = json.Marshal(results)
 	case "xml":
 		serialized, err = xml.Marshal(results)
+	case "nmap":
+		serialized, err = sonar.ToNmap(results), nil
 	default:
 		// TODO: return error for invalid format
 	}
