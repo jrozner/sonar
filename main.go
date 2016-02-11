@@ -57,7 +57,7 @@ func main() {
 	case (brute == true):
 		var wl Wordlist
 		if wordlist == "" {
-			wl = NewInternal()
+			wl = NewInternal(internalWords)
 		} else {
 			wl = NewFile(wordlist)
 		}

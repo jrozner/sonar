@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var internalWords = []string{"www", "beta", "mail", "demo", "test"}
+
 type Wordlist interface {
 	readWords()
 	GetChannel() <-chan string
@@ -30,10 +32,10 @@ func (i *Internal) GetChannel() <-chan string {
 	return i.ch
 }
 
-func NewInternal() *Internal {
+func NewInternal(words []string) *Internal {
 	ch := make(chan string)
 	wordlist := &Internal{
-		words: []string{"www", "beta", "mail", "demo", "test"},
+		words: words,
 		ch:    ch,
 	}
 
