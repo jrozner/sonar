@@ -14,6 +14,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/jrozner/sonar"
 	"github.com/miekg/dns"
 )
 
@@ -49,21 +50,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var results results
+	var results sonar.Results
 
 	switch {
 	case (zt == true):
 		results = zoneTransfer(domain)
 	case (brute == true):
-		var wl Wordlist
+		var wl sonar.Wordlist
 		if wordlist == "" {
-			wl = NewInternal(internalWords)
+			wl = sonar.NewInternal(sonar.InternalWords)
 		} else {
 			fp, err := os.Open(wordlist)
 			if err != nil {
 				log.Fatal(err)
 			}
-			wl = NewFile(fp)
+			wl = sonar.NewFile(fp)
 		}
 		results = bruteForce(threads, wl.GetChannel(), domain)
 	}
@@ -75,7 +76,7 @@ func main() {
 	}
 }
 
-func writeOutput(output, format string, results results) error {
+func writeOutput(output, format string, results sonar.Results) error {
 	fp, err := os.OpenFile(output, os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
 		return err
@@ -106,8 +107,8 @@ func writeOutput(output, format string, results results) error {
 	return nil
 }
 
-func zoneTransfer(domain string) results {
-	results := newResultSet()
+func zoneTransfer(domain string) sonar.Results {
+	results := sonar.NewResultSet()
 	fqdn := dns.Fqdn(domain)
 
 	servers, err := net.LookupNS(domain)
@@ -147,7 +148,7 @@ func zoneTransfer(domain string) results {
 	return results.Results()
 }
 
-func bruteForce(threads int, wordlist <-chan string, domain string) results {
+func bruteForce(threads int, wordlist <-chan string, domain string) sonar.Results {
 	fmt.Println("[+] Detecting wildcard")
 	wildcard, responses, err := detectWildcard(domain)
 	if err != nil {
@@ -160,7 +161,7 @@ func bruteForce(threads int, wordlist <-chan string, domain string) results {
 
 	fmt.Println("[+] Beginning brute force attempt")
 
-	results := make(results, 0)
+	results := make(sonar.Results, 0)
 
 	var wg sync.WaitGroup
 	for i := 0; i < threads; i++ {
@@ -188,7 +189,7 @@ func bruteForce(threads int, wordlist <-chan string, domain string) results {
 					}
 				}
 
-				result := result{Domain: guess, Addrs: answers}
+				result := sonar.Result{Domain: guess, Addrs: answers}
 				results = append(results, result)
 			}
 
@@ -202,7 +203,7 @@ func bruteForce(threads int, wordlist <-chan string, domain string) results {
 	return results
 }
 
-func printResults(results results) {
+func printResults(results sonar.Results) {
 	for _, result := range results {
 		fmt.Println(result)
 	}

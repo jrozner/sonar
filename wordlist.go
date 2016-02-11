@@ -1,4 +1,4 @@
-package main
+package sonar
 
 import (
 	"bufio"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var internalWords = []string{"www", "beta", "mail", "demo", "test"}
+var InternalWords = []string{"www", "beta", "mail", "demo", "test"}
 
 type Wordlist interface {
 	readWords()
