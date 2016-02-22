@@ -1,4 +1,4 @@
-# Sonar
+# Sonar [![Build Status](https://travis-ci.org/jrozner/sonar.svg?branch=master)](https://travis-ci.org/jrozner/sonar)
 Sonar is a reconnaissance tool for enumerating sub domains.
 
 ## Features
