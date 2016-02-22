@@ -1,3 +1,4 @@
+//go:generate wordlist_generator -wordlist wordlist.txt
 package sonar
 
 import (
@@ -5,8 +6,6 @@ import (
 	"io"
 	"strings"
 )
-
-var InternalWords = []string{"www", "beta", "mail", "demo", "test"}
 
 type Wordlist interface {
 	readWords()

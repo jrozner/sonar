@@ -52,7 +52,7 @@ func main() {
 	case (brute == true):
 		var wl sonar.Wordlist
 		if wordlist == "" {
-			wl = sonar.NewInternal(sonar.InternalWords)
+			wl = sonar.NewInternal(sonar.InternalWordlist)
 		} else {
 			fp, err := os.Open(wordlist)
 			if err != nil {
