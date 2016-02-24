@@ -16,7 +16,7 @@ Pre-built binaries will be distributed in the "Releases" tab on GitHub. If you w
 
 ```sh
 go install cmd/wordlist_generator...
-go get
+go generate
 cd cmd/sonar
 go build
 ```
