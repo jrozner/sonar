@@ -15,10 +15,10 @@ Sonar is a reconnaissance tool for enumerating sub domains. It was modeled after
 Pre-built binaries will be distributed in the "Releases" tab on GitHub. If you wish you compile yourself you first need to get the Go compiler either from [https://www.golang.org](https://www.golang.org) or through your operating system's package manager. Once setup and installed follow these steps from within the cloned repository to compile:
 
 ```sh
-1. go install cmd/wordlist_generator...
-1. go get
-1. cd cmd/sonar
-1. go build
+go install cmd/wordlist_generator...
+go get
+cd cmd/sonar
+go build
 ```
 
 This will produce an executable called sonar (sonar.exe on windows) for the platform you are currently on. If you would like to cross compile for another platform follow the instructions [here](http://dave.cheney.net/2015/08/22/cross-compilation-with-go-1-5) for configuring the Go compiler for cross compilation.
