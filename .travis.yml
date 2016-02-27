@@ -4,6 +4,4 @@ go:
   - 1.6
   - tip
 install:
-  - go install ./cmd/wordlist_generator...
-  - go generate
-  - go get github.com/miekg/dns
+  - go test
