@@ -27,7 +27,7 @@ func main() {
 
 	wordSlice := strings.Split(string(words), "\n")
 	out := bytes.NewBuffer([]byte{})
-	_, err = out.Write([]byte("package " + pkg + "\n\nvar InternalWordlist = []string{\n\t\"" + strings.Join(wordSlice, "\",\n\t\"") + "\"\n}\n"))
+	_, err = out.Write([]byte("package " + pkg + "\n\nvar InternalWordlist = []string{\n\t\"" + strings.Join(wordSlice, "\",\n\t\"") + "\",\n}\n"))
 	if err != nil {
 		log.Fatal(err)
 	}

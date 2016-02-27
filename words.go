@@ -41,5 +41,5 @@ var InternalWordlist = []string{
 	"video",
 	"vpn",
 	"www",
-	""
+	"",
 }
