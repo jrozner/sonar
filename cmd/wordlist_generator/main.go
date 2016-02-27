@@ -11,7 +11,7 @@ import (
 func main() {
 	var wordlist, pkg, output string
 
-	flag.StringVar(&wordlist, "wordlist", "", "word list to generate from")
+	flag.StringVar(&wordlist, "wordlist", "wordlist.txt", "word list to generate from")
 	flag.StringVar(&pkg, "package", "sonar", "package to generate for")
 	flag.StringVar(&output, "output", "words.go", "file output source to")
 	flag.Parse()
@@ -27,7 +27,7 @@ func main() {
 
 	wordSlice := strings.Split(string(words), "\n")
 	out := bytes.NewBuffer([]byte{})
-	_, err = out.Write([]byte("package " + pkg + "\n\nvar InternalWordlist = []string{\"" + strings.Join(wordSlice, "\", \"") + "\"}\n"))
+	_, err = out.Write([]byte("package " + pkg + "\n\nvar InternalWordlist = []string{\n\t\"" + strings.Join(wordSlice, "\",\n\t\"") + "\"\n}\n"))
 	if err != nil {
 		log.Fatal(err)
 	}
