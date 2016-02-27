@@ -1,7 +1,6 @@
 language: go
 go:
-  - 1.5
   - 1.6
   - tip
-install:
-  - go test
+before_script:
+  - go test -v
